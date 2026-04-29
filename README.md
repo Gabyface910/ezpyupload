@@ -1,4 +1,5 @@
-# ezpyupload
+[![ezpyupload](https://github.com/Gabyface910/ezpyupload/blob/main/icon.png?raw=true)](https://github.com/Gabyface910/ezpyuploaf)
+
 The GUI python library to upload a package to PyPI lickety-split
 ## How to install:
 ```
