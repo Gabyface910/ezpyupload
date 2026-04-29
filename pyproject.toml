@@ -10,7 +10,8 @@ authors = [{name = "Gabyface910"}]
 requires-python = ">=3.7"
 dependencies = [
     "build",
-    "twine"
+    "twine",
+    "pysimplegui"
 ]
 
 [tool.setuptools.packages.find]
