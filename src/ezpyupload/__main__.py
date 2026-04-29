@@ -1,6 +1,8 @@
 import subprocess
 import os
 
+os.system("export PYTHONIOENCODING=utf-8")
+
 def run_publisher():
     # --field=...:DIR creates a folder picker
     # --field=...:ENTRY creates a text box
