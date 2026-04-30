@@ -10,17 +10,16 @@ python3 -m nomnomnom
 ### Did PyPI make this or endorse it in any way?
 No, PyPI did not endorse ezpyupload. It is an unofficial but functional system to upload stuff to PyPI.
 ### What OS is supported?
-Currently, ezpyupload runs on YAD (Yet Another Dialog), and is only available on Linux. Even if you managed to get YAD, it would be hard to run. The good news is that Linux is __completely free__ and anyone can use it!
+As of April 30, 2026, ezpyupload has been upgraded from YAD (Yet Another Dialog) to more native `tkinter` libraries. This means ezpyupload can be run on __ANY__ OS! (Just make sure your system has graphics 🤓)
 ezpyupload has been tested on:
 - Debian Linux
 
-That's all!
 ### How do I upload a package?
 To upload a package using ezpyupload, run this command.
 ```bash
 export PYTHONIOENCODING=utf-8
 # ^
-# | Make sure to run this before python3 -m
+# | Make sure to run this before python3 -m if you're on Linux. Watch the terminal afterwards. If it throws a massive error, turn that on
 # If you don't, ezpyupload will return an error
 python3 -m ezpyupload
 ```
