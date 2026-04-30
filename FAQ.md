@@ -26,7 +26,8 @@ python3 -m ezpyupload
 Check the box and locate the folder you are uploading from. Select the folder from the dropdown and paste your PyPI API token (available from [pypi.org](https://pypi.org)) into the text box. Click `[Launch]` and you're off!
 ### How does ezpyupload work?
 It's simple:
-1. ezpyupload opens YAD (Yet Another Dialog) and gives you your GUI choices.
+1. ezpyupload opens `tkinter` and gives you your GUI.
 2. `python -m build` and `python -m twine upload dist/*` run in the background. This uploads your package.
+3. Best of all, ezpyupload doesn't collect any information about your stuff! Obviously, if it's in PyPI, it's public, but ezpyupload doesn't track stuff.
 
 That's everything!
