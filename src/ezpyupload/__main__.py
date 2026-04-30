@@ -1,58 +1,87 @@
-import PySimpleGUI as sg
+import tkinter as tk
+from tkinter import filedialog, messagebox
 import subprocess
 import os
+import sys
 
-def run_workflow(values):
-    project_dir = values['-FOLDER-']
-    api_token = values['-TOKEN-']
+def handle_paste(event):
+    """Explicitly handle pasting from clipboard."""
+    try:
+        # Get text from clipboard
+        text = event.widget.selection_get(selection='CLIPBOARD')
+        # Insert at current cursor position
+        event.widget.insert(tk.INSERT, text)
+    except tk.TclError:
+        pass # Clipboard empty or incompatible
+    return "break" # Prevent the default paste behavior from doubling the text
+
+def run_command():
+    folder = folder_entry.get()
+    token = token_entry.get()
     
-    if not project_dir or not os.path.isdir(project_dir):
-        print("Error: Please select a valid project directory.")
+    if not os.path.isdir(folder):
+        messagebox.showerror("Error", "Please select a valid directory.")
         return
 
-    os.chdir(project_dir)
-
+    os.chdir(folder)
+    
     try:
-        # 1. Build
-        print(f"--- Building in {project_dir} ---")
-        subprocess.run(["python", "-m", "build"], check=True, shell=True)
+        print(f"Building in: {folder}")
+        subprocess.run([sys.executable, "-m", "build"], check=True)
 
-        # 2. Upload
-        if api_token:
-            print("--- Uploading to PyPI ---")
+        if token:
+            print("Uploading to PyPI...")
             env = os.environ.copy()
             env["TWINE_USERNAME"] = "__token__"
-            env["TWINE_PASSWORD"] = api_token
+            env["TWINE_PASSWORD"] = token
             
-            # shell=True helps with 'dist/*' expansion on Windows
-            subprocess.run(["python", "-m", "twine", "upload", "dist/*"], 
+            # Using glob-like behavior via the shell for the dist/* path
+            # On Windows, we call twine via 'python -m twine'
+            subprocess.run(f'"{sys.executable}" -m twine upload dist/*', 
                            env=env, check=True, shell=True)
-            print("Success! Package uploaded.")
+            messagebox.showinfo("Success", "Package uploaded successfully!")
         else:
-            print("Upload skipped: No API token provided.")
+            messagebox.showwarning("Incomplete", "Build finished, but no token provided.")
             
-    except subprocess.CalledProcessError as e:
-        print(f"Error during execution: {e}")
+    except Exception as e:
+        messagebox.showerror("Execution Error", str(e))
 
-# --- GUI Layout ---
-layout = [
-    [sg.Text("Project Directory:"), sg.Input(os.getcwd(), key="-FOLDER-"), sg.FolderBrowse()],
-    [sg.Text("PyPI API Token:   "), sg.Input(key="-TOKEN-", password_char="*")],
-    [sg.Button("Start Build & Upload"), sg.Button("Exit")],
-    [sg.Multiline(size=(60, 10), key="-LOG-", autoscroll=True, disabled=True)]
-]
+# --- UI Setup ---
+root = tk.Tk()
+root.title("Python Publisher")
+root.geometry("500x280")
 
-window = sg.Window("Python Package Publisher", layout)
+# Folder Selection
+tk.Label(root, text="Project Folder:").pack(pady=(10, 0))
+folder_frame = tk.Frame(root)
+folder_frame.pack()
+folder_entry = tk.Entry(folder_frame, width=40)
+folder_entry.insert(0, os.getcwd())
+folder_entry.pack(side=tk.LEFT, padx=5)
 
-# --- Event Loop ---
-while True:
-    event, values = window.read()
-    if event in (sg.WIN_CLOSED, "Exit"):
-        break
-    
-    if event == "Start Build & Upload":
-        # Redirect print to the Multiline log widget
-        window["-LOG-"].update("Starting workflow...\n")
-        run_workflow(values)
+# Bind paste to folder field
+folder_entry.bind("<Control-v>", handle_paste)
 
-window.close()
+def browse_folder():
+    path = filedialog.askdirectory()
+    if path:
+        folder_entry.delete(0, tk.END)
+        folder_entry.insert(0, path)
+
+tk.Button(folder_frame, text="Browse", command=browse_folder).pack(side=tk.LEFT)
+
+# Token Entry
+tk.Label(root, text="PyPI API Token:").pack(pady=(10, 0))
+token_entry = tk.Entry(root, width=50, show="*")
+token_entry.pack(pady=5)
+
+# Bind paste to token field
+token_entry.bind("<Control-v>", handle_paste)
+# Support for Right-Click Paste (Windows/Linux)
+token_entry.bind("<Button-3>", lambda e: handle_paste(e))
+
+# Action Button
+tk.Button(root, text="Build & Upload", bg="#2e7d32", fg="white", 
+          command=run_command, height=2, width=20).pack(pady=20)
+
+root.mainloop()
