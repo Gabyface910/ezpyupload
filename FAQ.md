@@ -13,7 +13,7 @@ No, PyPI did not endorse ezpyupload. It is an unofficial but functional system t
 As of April 30, 2026, ezpyupload has been upgraded from YAD (Yet Another Dialog) to more native `tkinter` libraries. This means ezpyupload can be run on __ANY__ OS! (Just make sure your system has graphics 🤓)
 ezpyupload has been tested on:
 - Debian Linux
-
+- Windows 11
 ### How do I upload a package?
 To upload a package using ezpyupload, run this command.
 ```bash
